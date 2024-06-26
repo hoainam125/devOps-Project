@@ -1,12 +1,12 @@
 import re
 from fastapi import HTTPException
-from ..db import crud, schemas
-from ..extra.security import get_password_hash, verify_password, create_access_token, verify_token
+from db import crud, schemas
+from extra.security import get_password_hash, verify_password, create_access_token, verify_token
 from sqlalchemy.orm import Session
-from ..extra.RedisStorage import RedisStorage
+from extra.RedisStorage import RedisStorage
 from fastapi import Depends
 from redis import Redis
-from ..extra import config
+from extra import config
 
 config = config.get_config()
 redis_storage = RedisStorage()

@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:13
+    container_name: postgres_devops
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      POSTGRES_DB: ${POSTGRES_DB:-devOps}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - devops_network
+
+  redis:
+    image: redis:latest
+    container_name: redis_devops
+    ports:
+      - "6379:6379"
+    networks:
+      - devops_network
+
+  fastapi:
+    build: .
+    container_name: fastapi_devops
+    environment:
+      HOST: ${HOST:-localhost}
+      PORT: ${PORT:-8000}
+      POSTGRES_USER: ${POSTGRES_USER:-admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      POSTGRES_DB: ${POSTGRES_DB:-devOps}
+      POSTGRES_SERVER: postgres
+      POSTGRES_PORT: ${POSTGRES_PORT:-5432}
+      REDIS_HOST: redis
+      REDIS_PORT: ${REDIS_PORT:-6379}
+      SECRET_KEY: ${SECRET_KEY:-Hard_Too_Guest_2024}
+      JWT_ALGORITHM: ${JWT_ALGORITHM:-HS256}
+      ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES:-30}
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - devops_network
+
+volumes:
+  postgres_data:
+
+networks:
+  devops_network:
+    driver: bridge

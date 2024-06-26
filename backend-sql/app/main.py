@@ -1,16 +1,22 @@
 from fastapi import FastAPI
 import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
-from .extra import config
-from .routes import auth, panel
+from extra import config
+from routes import auth, panel
 
 
 config = config.get_config()
+is_production = bool(config.PRODUCTION)
+if not is_production:
+    docs = '/api/docs'
+    redoc= '/api/redoc'
+    openapi = '/api/openapi.json'
+else:
 
-docs = '/api/docs' if not config.PRODUCTION else None
-redoc= '/api/redoc' if not config.PRODUCTION else None
-openapi = '/api/openapi.json' if not config.PRODUCTION else None
-app = FastAPI(docs_url = docs, redoc_url = redoc, openapi_url = openapi,debug=True)
+    docs = None
+    redoc = None
+    openapi = None
+app = FastAPI(docs_url = docs, redoc_url = redoc, openapi_url = openapi)
 
 app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
 app.include_router(panel.router, prefix="/api/panel")
@@ -24,4 +30,4 @@ app.add_middleware(
 )
 
 if __name__ == "__main__":
-    uvicorn.run(app, host=config.HOST, port=8001)
+    uvicorn.run(app, host=config.HOST, port=config.PORT)
