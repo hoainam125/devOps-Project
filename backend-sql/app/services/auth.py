@@ -1,7 +1,7 @@
 import re
 from fastapi import HTTPException
 from ..db import crud, schemas
-from ..extra.security import get_password_hash, verify_password, create_access_token
+from ..extra.security import get_password_hash, verify_password, create_access_token, verify_token
 from sqlalchemy.orm import Session
 from ..extra.RedisStorage import RedisStorage
 from fastapi import Depends
@@ -29,4 +29,17 @@ def signin(db: Session, user: schemas.UserLogin):
     payload = {"uid": db_user.id, "username": db_user.username, "display_name": db_user.display_name}
     token = create_access_token(payload, redis_storage)
     return {"status": "success", "token": token}
+
+def oAuth(db: Session, token: schemas.Token):
+    token = token
+    result = verify_token(token, redis_storage)
+    if result["status"] == "failed":
+        return {"status": "failed", "detail": "Invalid Token"}
+    payload = result["payload"]
+    auth_user = crud.get_user_by_username(db, payload["username"])
+    if auth_user.id == payload["uid"]:
+        return {"status": "success","token": token ,"uid": payload["uid"], "username": payload["username"], "display_name": payload["display_name"]}
+    print(2)
+    return {"status": "failed", "detail": "Invalid Token"}
+
 

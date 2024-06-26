@@ -2,7 +2,7 @@ from fastapi import FastAPI
 import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
 from .extra import config
-from .routes import auth
+from .routes import auth, panel
 
 
 config = config.get_config()
@@ -13,6 +13,7 @@ openapi = '/api/openapi.json' if not config.PRODUCTION else None
 app = FastAPI(docs_url = docs, redoc_url = redoc, openapi_url = openapi,debug=True)
 
 app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
+app.include_router(panel.router, prefix="/api/panel")
 
 app.add_middleware(
     CORSMiddleware,
