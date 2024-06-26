@@ -1,6 +1,6 @@
 import redis
 from typing import Optional
-from . import config
+from extra import config
 
 config = config.get_config()
 

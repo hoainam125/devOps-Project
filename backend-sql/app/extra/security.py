@@ -6,8 +6,8 @@ import json
 import hmac
 from passlib.context import CryptContext
 from redis import Redis
-from . import config
-from .RedisStorage import RedisStorage
+from extra import config
+from extra.RedisStorage import RedisStorage
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 settings = config.get_config()
