@@ -13,9 +13,12 @@ class Settings:
         self.POSTGRES_SERVER = os.getenv('POSTGRES_SERVER', 'localhost')
         self.POSTGRES_PORT = os.getenv('POSTGRES_PORT', '5432')
         self.REDIS_HOST = os.getenv('REDIS_HOST', 'localhost')
-        self.PROD = os.getenv('PROD', False)
-        
-        
+        self.REDIS_PORT = os.getenv('REDIS_PORT', '6379')
+        self.PRODUCTION = os.getenv('PRODUCTION', False)
+
+
 
 # Create an instance of the Settings class
 settings = Settings()
+def get_config():
+    return settings
