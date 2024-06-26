@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
-from .models import User
-from .schemas import UserCreate, UserLogin
-from .. extra.security import get_password_hash, verify_password
+from db.models import User
+from db.schemas import UserCreate, UserLogin
+from extra.security import get_password_hash, verify_password
 def get_user_by_username(db: Session, username: str):
     return db.query(User).filter(User.username == username).first()
 
