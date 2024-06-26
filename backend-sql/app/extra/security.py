@@ -59,13 +59,12 @@ def verify_token(token: str, store: RedisStorage):
 
         expire = datetime.fromisoformat(payload["exp"])
         if expire < datetime.now(timezone.utc):
-            raise HTTPException(status_code=401, detail="Token expired")
-
+            return {"status": "failed", "detail": "Token expired"}
         uid = payload.get("uid", None)
         assert uid is not None
         secret = store.get(uid)
         if not secret:
-            raise HTTPException(status_code=401, detail="Token invalid")
+            return {"status": "failed", "detail": "Token secret not found"}
         if isinstance(secret, bytes):
             secret = secret.decode()
 
@@ -76,8 +75,8 @@ def verify_token(token: str, store: RedisStorage):
         ).digest()
 
         if not hmac.compare_digest(signature_b64, urlsafe_b64encode(expected_signature)):
-            raise HTTPException(status_code=401, detail="Token signature does not match")
+            return {"status": "failed", "detail": "Invalid token signature"}
 
-        return payload
+        return {"status": "success", "payload": payload}
     except (ValueError, KeyError, json.JSONDecodeError):
-        raise HTTPException(status_code=401, detail="Token could not be decoded")
+        raise {"status": "failed", "detail": "Token Could Not Be Decode"}
