@@ -34,7 +34,8 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
 @router.post("/signin/", tags=["auth"])
 def login(user: schemas.UserLogin, response: Response, db: Session = Depends(get_db)):
     result = signin(db=db, user=user)
+
     if result["status"] == "failed":
         return JSONResponse(status_code=status.HTTP_400_BAD_REQUEST, content={"message": "Signin failed", "detail": result["detail"]})
     response.set_cookie(key="auth", value=f"Bearer {result['token']}", httponly=True)
-    return {"message": "Signin successful"}
+    return {"message": "Signin successful" , "token": result["token"]}

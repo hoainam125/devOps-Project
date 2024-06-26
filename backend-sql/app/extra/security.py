@@ -7,14 +7,12 @@ import hmac
 from passlib.context import CryptContext
 from redis import Redis
 from . import config
-from . import RedisStorage
+from .RedisStorage import RedisStorage
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 settings = config.get_config()
 
-def get_redis() -> Redis:
-    redis_storage = RedisStorage.RedisStorage.get_instance()
-    return redis_storage._store
+
 def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
 
@@ -28,11 +26,11 @@ def urlsafe_b64decode(data: str) -> bytes:
     padded = data + '=' * (-len(data) % 4)
     return base64.urlsafe_b64decode(padded)
 
-def create_access_token(data: dict, store: Depends(get_redis()), expires_delta: timedelta = None):
+def create_access_token(data: dict, store: RedisStorage, expires_delta: timedelta = None):
     uid = data.get("uid", None)
     assert uid is not None
     secret = str(uid) + settings.SECRET_KEY + datetime.now().isoformat()
-    store.set(uid, secret, ex=settings.JWT_EXPIRATION)
+    store.set(uid, secret, ex=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60)
 
     header = {
         "alg": "HS256",
@@ -54,7 +52,7 @@ def create_access_token(data: dict, store: Depends(get_redis()), expires_delta: 
 
     return f"{header_encoded}.{payload_encoded}.{signature_encoded}"
 
-def verify_token(token: str, store: Redis):
+def verify_token(token: str, store: RedisStorage):
     try:
         header_b64, payload_b64, signature_b64 = token.split('.')
         payload = json.loads(urlsafe_b64decode(payload_b64))
