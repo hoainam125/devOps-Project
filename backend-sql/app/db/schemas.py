@@ -17,3 +17,11 @@ class User(UserBase):
 
     class Config:
         from_attributes = True
+class Token(BaseModel):
+    token: str
+class oAuthResponse(BaseModel):
+    token: str
+    uid: int
+    username: str
+    display_name: str
+
