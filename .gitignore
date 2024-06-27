@@ -1,0 +1,4 @@
+backend-sql/venv/
+frontend/node_modules/
+.idea/
+*__pycache__*
