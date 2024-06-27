@@ -20,8 +20,8 @@ class User(UserBase):
 class Token(BaseModel):
     token: str
 class oAuthResponse(BaseModel):
-    token: str
     uid: int
     username: str
     display_name: str
+    email: str
 
