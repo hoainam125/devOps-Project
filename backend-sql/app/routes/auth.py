@@ -37,5 +37,5 @@ def login(user: schemas.UserLogin, response: Response, db: Session = Depends(get
 
     if result["status"] == "failed":
         return JSONResponse(status_code=status.HTTP_400_BAD_REQUEST, content={"message": "Signin failed", "detail": result["detail"]})
-    response.set_cookie(key="auth", value=f"Bearer {result['token']}", httponly=True)
+    response.set_cookie(key="auth", value=f"Bearer {result['token']}", httponly=True, samesite="strict", path="/api")
     return {"message": "Signin successful" , "token": result["token"]}

@@ -36,9 +36,9 @@ def oAuth(db: Session, token: schemas.Token):
     if result["status"] == "failed":
         return {"status": "failed", "detail": "Invalid Token"}
     payload = result["payload"]
-    auth_user = crud.get_user_by_username(db, payload["username"])
-    if auth_user.id == payload["uid"]:
-        return {"status": "success","token": token ,"uid": payload["uid"], "username": payload["username"], "display_name": payload["display_name"]}
+    auth_user = crud.get_user_info_by_username(db, payload["username"])
+    if auth_user["id"] == payload["uid"]:
+        return {"status": "success" ,"uid": auth_user["id"],"email": auth_user["email"], "username": auth_user["username"], "display_name": auth_user["display_name"]}
     print(2)
     return {"status": "failed", "detail": "Invalid Token"}
 

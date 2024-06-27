@@ -25,3 +25,8 @@ def authenticate_user(db: Session, login_data: UserLogin):
     if user and verify_password(login_data.password, user.password):  # Example function to verify password
         return user
     return None
+def get_user_info_by_username(db: Session, username: str):
+    user = db.query(User).filter(User.username == username).first()
+    if user:
+        return user.to_dict()
+    return None
